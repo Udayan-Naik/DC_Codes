@@ -16,7 +16,7 @@ public class App {
         for (int i = 0; i < processes; i++) {
             List<Integer> newProcess = new ArrayList<>();
             System.out.println("What is the clock cycle of Process " + Integer.valueOf(i+1));
-            int clockCycle = scanner.nextInt();
+            int clockC ycle = scanner.nextInt();
             for (int j = 0; j < events; j++) {
                 newProcess.add(clockCycle * j);
             }

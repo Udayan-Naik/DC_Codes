@@ -16,8 +16,8 @@ public class Main {
         System.out.print("Enter number of processes: ");
         int noOfProcesses = sc.nextInt();
         List<Process> processes = new ArrayList<>();
-        for(int i = 0; i < noOfProcesses; i++) {
-            System.out.print("Events in process " + (i + 1)+ ": ");
+        for (int i = 0; i < noOfProcesses; i++) {
+            System.out.print("Events in process " + (i + 1) + ": ");
             int events = sc.nextInt();
             Process p = new Process(events);
             processes.add(p);
@@ -28,8 +28,8 @@ public class Main {
 
         sc.nextLine();
         System.out.print("Do you want add requests (Y / N): ");
-        boolean terminate = sc.nextLine().equalsIgnoreCase("Y") ? false: true;
-        while(!terminate) {
+        boolean terminate = sc.nextLine().equalsIgnoreCase("Y") ? false : true;
+        while (!terminate) {
             System.out.print("Sender Process: ");
             int senderP = sc.nextInt();
             System.out.print("Sender Event: ");
@@ -44,16 +44,16 @@ public class Main {
             requests.offer(r);
             sc.nextLine();
             System.out.print("Do you want add requests (Y / N): ");
-            terminate = sc.nextLine().equalsIgnoreCase("Y") ? false: true;
+            terminate = sc.nextLine().equalsIgnoreCase("Y") ? false : true;
         }
 
 
-        while(!requests.isEmpty()){
+        while (!requests.isEmpty()) {
             Request r = requests.poll();
             processRequest(r, processes);
         }
 
-        for(Process p : processes) {
+        for (Process p : processes) {
             System.out.println(Arrays.toString(p.getClockTimeline()));
         }
 
@@ -76,7 +76,7 @@ public class Main {
 
     public static void cascadeUpdate(int[] timeLine, int index) {
 
-        for(int i = index + 1; i < timeLine.length; i++) {
+        for (int i = index + 1; i < timeLine.length; i++) {
             timeLine[i] = timeLine[i - 1] + 1;
         }
     }
