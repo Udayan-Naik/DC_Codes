@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 public class ThreadMain {
 
@@ -39,7 +40,7 @@ public class ThreadMain {
                 System.out.print("Do you want add more requests: ");
                 terminate = sc.nextLine().equalsIgnoreCase("Y") ? false : true;
             }
-            System.out.print("Do you want add received requests (Y / N): ");
+            System.out.print("Do you want add received requests for process " + (i + 1) + " (Y / N): ");
             terminate = sc.nextLine().equalsIgnoreCase("Y") ? false : true;
             while (!terminate) {
                 System.out.print("Sender Process: ");
@@ -64,6 +65,7 @@ public class ThreadMain {
             System.out.println(p.getReceiveList());
         }
 
+        CountDownLatch latch = new CountDownLatch(1);
         Thread[] threads = new Thread[noOfProcesses];
 
         for (int it = 0; it < noOfProcesses; it++) {
@@ -76,28 +78,39 @@ public class ThreadMain {
 
                     // check if there are any receiving requests on current event
                     int[] clockTimeline = p.getClockTimeline();
-                    if (p.getReceiveList().peek().getReceiverEvent() == (i + 1)) {
-                        Request r = p.getReceiveList().poll();
+                    Request r = p.getReceiveList().peek();
+                    if (r != null && r.getReceiverEvent() == (i + 1)) {
                         ProcessMod senderProcess = processes.get(r.getSenderProcess() - 1);
-                        while (senderProcess.getClock() <= clock) {
+
+                        // worst silly mistake made here
+                        while (senderProcess.getEventsTraversed() < r.getSenderEvent()) {
                             // wait will be called here
+                            try {
+                                System.out.println(Thread.currentThread().getName() + "Waiting process " + p);
+                                latch.await();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                         clock = Math.max(clock, clockTimeline[i]) + 1;
+
                     } else {
                         clock++;
                     }
-
+                    latch.countDown();
                     // update the running clock and the timeline
                     clockTimeline[i] = clock;
                     p.setClock(clock);
 
                     // check if there are any sending requests on current event
-                    if (p.getSendList().peek().getSenderEvent() == (i + 1)) {
-                        Request r = p.getSendList().poll();
+                    r = p.getSendList().peek();
+                    if (r != null && r.getSenderEvent() == (i + 1)) {
                         ProcessMod receiverProcess = processes.get(r.getReceiverProcess() - 1);
                         int receiverEvent = r.getReceiverEvent() - 1;
                         receiverProcess.getClockTimeline()[receiverEvent] = clock;
                     }
+
+                    p.traverseEvent();
                 }
             });
         }

@@ -9,6 +9,7 @@ public class ProcessMod extends Process {
     private Queue<Request> sendList;
     private Queue<Request> receiveList;
     private int clock;
+    private int eventsTraversed;
 
 
     public ProcessMod(int eventCount) {
@@ -16,6 +17,7 @@ public class ProcessMod extends Process {
         sendList = new PriorityQueue<>(Comparator.comparing(Request::getSenderEvent));
         receiveList = new PriorityQueue<>(Comparator.comparing(Request::getReceiverEvent));
         clock = 0;
+        eventsTraversed = 0;
     }
 
 
@@ -41,5 +43,27 @@ public class ProcessMod extends Process {
 
     public void setClock(int clock) {
         this.clock = clock;
+    }
+
+    public int getEventsTraversed() {
+        return eventsTraversed;
+    }
+
+    public void setEventsTraversed(int eventsTraversed) {
+        this.eventsTraversed = eventsTraversed;
+    }
+
+    public void traverseEvent() {
+        eventsTraversed++;
+    }
+
+    @Override
+    public String toString() {
+        return "ProcessMod{" +
+                "sendList=" + sendList +
+                ", receiveList=" + receiveList +
+                ", clock=" + clock +
+                ", eventsTraversed=" + eventsTraversed +
+                '}';
     }
 }
